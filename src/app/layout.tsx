@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ToasterProvider } from "~/lib/toast-provider";
+import LeftSideBar from "~/components/layout/left-side-bar";
+import TopBar from "~/components/layout/top-bar";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,8 +28,8 @@ export default function RootLayout({
         {/* Apply Poppins font */}
         <ToasterProvider />
         <div className="flex max-lg:flex-col text-grey-1">
-          {/* <LeftSideBar /> */}
-          {/* <TopBar /> */}
+          <LeftSideBar />
+          <TopBar />
           <div className="flex-1">{children}</div>
         </div>
       </body>
