@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { ToasterProvider } from "~/lib/toast-provider";
 import LeftSideBar from "~/components/layout/left-side-bar";
 import TopBar from "~/components/layout/top-bar";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,17 +23,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={poppins.className}>
-        {" "}
-        {/* Apply Poppins font */}
-        <ToasterProvider />
-        <div className="flex max-lg:flex-col text-grey-1">
-          <LeftSideBar />
-          <TopBar />
-          <div className="flex-1">{children}</div>
-        </div>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={poppins.className}>
+          {" "}
+          {/* Apply Poppins font */}
+          <ToasterProvider />
+          <div className="flex max-lg:flex-col text-grey-1">
+            <LeftSideBar />
+            <TopBar />
+            <div className="flex-1">{children}</div>
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

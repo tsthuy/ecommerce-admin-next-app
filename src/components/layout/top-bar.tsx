@@ -7,6 +7,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { navLinks } from "./nav-link";
+import { UserButton } from "@clerk/nextjs";
 
 const TopBar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
@@ -48,7 +49,7 @@ const TopBar = () => {
             ))}
           </div>
         )}
-        {/* <UserButton /> */}
+        <UserButton />
       </div>
     </div>
   );

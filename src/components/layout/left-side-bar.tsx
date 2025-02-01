@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navLinks } from "./nav-link";
+import { UserButton } from "@clerk/nextjs";
 
 // import { navLinks } from "@/lib/constants";
 
@@ -30,7 +31,7 @@ const LeftSideBar = () => {
       </div>
 
       <div className="flex gap-4 text-body-medium items-center">
-        {/* <UserButton /> */}
+        <UserButton />
         <p>Edit Profile</p>
       </div>
     </div>
