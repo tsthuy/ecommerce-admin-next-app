@@ -5,6 +5,7 @@ import { ToasterProvider } from "~/lib/toast-provider";
 import LeftSideBar from "~/components/layout/left-side-bar";
 import TopBar from "~/components/layout/top-bar";
 import { ClerkProvider } from "@clerk/nextjs";
+import Provider from "~/lib/provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,14 +27,14 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={poppins.className}>
-          {" "}
-          {/* Apply Poppins font */}
-          <ToasterProvider />
-          <div className="flex max-lg:flex-col text-grey-1">
-            <LeftSideBar />
-            <TopBar />
-            <div className="flex-1">{children}</div>
-          </div>
+          <Provider>
+            <ToasterProvider />
+            <div className="flex max-lg:flex-col text-grey-1">
+              <LeftSideBar />
+              <TopBar />
+              <div className="flex-1">{children}</div>
+            </div>
+          </Provider>
         </body>
       </html>
     </ClerkProvider>

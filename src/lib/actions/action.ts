@@ -1,6 +1,10 @@
+"use server";
+
+import { auth } from "@clerk/nextjs/server";
 import Customer from "../models/customer.model";
 import Order from "../models/order.model";
 import { connectDB } from "../mongoDB";
+import Collection from "../models/collection.model";
 
 export const getTotalSales = async () => {
   await connectDB();
@@ -41,4 +45,48 @@ export const getSalesPerMonth = async () => {
   });
 
   return graphData;
+};
+
+export const createCollection = async (formData: {
+  title: string;
+  description: string;
+  image: string;
+}) => {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    await connectDB();
+
+    const { title, description, image } = formData;
+
+    const existingCollection = await Collection.findOne({ title });
+
+    if (existingCollection) {
+      throw new Error("Collection already exists");
+    }
+
+    if (!title || !image) {
+      throw new Error("Title and image are required");
+    }
+
+    const newCollection = await Collection.create({
+      title,
+      description,
+      image,
+    });
+
+    await newCollection.save();
+
+    return { success: true, data: newCollection };
+  } catch (err) {
+    console.error("[collections_POST]", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Something went wrong",
+    };
+  }
 };
