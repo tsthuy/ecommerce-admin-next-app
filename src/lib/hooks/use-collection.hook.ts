@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { collections } from "./../constants/collection.const";
-import { collectionApi } from "../services/collection.service";
-import { createCollection } from "../actions/action";
+import { collections } from "./../constants";
+import { collectionApi } from "../services";
+import { createCollection } from "../actions";
 import queryClient from "../query-client";
 
 export function useCollections() {

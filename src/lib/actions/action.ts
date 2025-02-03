@@ -1,10 +1,8 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import Customer from "../models/customer.model";
-import Order from "../models/order.model";
 import { connectDB } from "../mongoDB";
-import Collection from "../models/collection.model";
+import { Customer, Collection, Order } from "../models";
 
 export const getTotalSales = async () => {
   await connectDB();

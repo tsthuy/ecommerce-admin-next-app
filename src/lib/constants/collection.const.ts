@@ -1,5 +1,5 @@
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { collectionApi } from "../services/collection.service";
+import { collectionApi } from "../services";
 
 export const collections = createQueryKeys("collections", {
   all: null,

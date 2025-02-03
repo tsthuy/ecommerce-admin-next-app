@@ -1,13 +1,10 @@
 "use client";
 
-// import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navLinks } from "./nav-link";
 import { UserButton } from "@clerk/nextjs";
-
-// import { navLinks } from "@/lib/constants";
 
 const LeftSideBar = () => {
   const pathname = usePathname();

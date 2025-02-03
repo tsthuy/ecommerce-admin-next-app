@@ -16,11 +16,10 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import toast from "react-hot-toast";
-import Delete from "../custom-ui/delete";
+import { Delete, ImageUpload } from "../custom-ui";
 import { Separator } from "@radix-ui/react-separator";
-import ImageUpload from "../custom-ui/image-upload";
 import { Button } from "../ui/button";
-import { useCreateCollection } from "~/lib/hooks/use-collection.hook";
+import { useCreateCollection } from "~/lib/hooks";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
