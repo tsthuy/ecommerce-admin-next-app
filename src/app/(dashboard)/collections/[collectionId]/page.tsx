@@ -1,36 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import CollectionForm from "~/components/collections/collection-form";
 import Loader from "~/components/custom-ui/loader";
+import { useCollectionDetails } from "~/lib/hooks";
 
 const CollectionDetails = ({
   params,
 }: {
   params: { collectionId: string };
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [collectionDetails, setCollectionDetails] =
-    useState<CollectionType | null>(null);
+  const { data: collectionDetails, isLoading } = useCollectionDetails(
+    params.collectionId
+  );
 
-  const getCollectionDetails = async () => {
-    try {
-      const res = await fetch(`/api/collections/${params.collectionId}`, {
-        method: "GET",
-      });
-      const data = await res.json();
-      setCollectionDetails(data);
-      setLoading(false);
-    } catch (err) {
-      console.log("[collectionId_GET]", err);
-    }
-  };
-
-  useEffect(() => {
-    getCollectionDetails();
-  }, []);
-
-  return loading ? (
+  return isLoading ? (
     <Loader />
   ) : (
     <CollectionForm initialData={collectionDetails} />

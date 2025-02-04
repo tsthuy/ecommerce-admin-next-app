@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Textarea } from "../ui/textarea";
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Delete, ImageUpload, Loader } from "../custom-ui";
 import { Separator } from "@radix-ui/react-separator";
@@ -22,6 +21,7 @@ import { Input } from "../ui/input";
 import MultiText from "../custom-ui/multi-text";
 import { Button } from "../ui/button";
 import MultiSelect from "../custom-ui/multi-select";
+import { useCollections } from "~/lib/hooks";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(20),
@@ -41,28 +41,8 @@ interface ProductFormProps {
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
+  const { data: collections, isLoading } = useCollections();
   const router = useRouter();
-
-  const [loading, setLoading] = useState(true);
-  const [collections, setCollections] = useState<CollectionType[]>([]);
-
-  const getCollections = async () => {
-    try {
-      const res = await fetch("/api/collections", {
-        method: "GET",
-      });
-      const data = await res.json();
-      setCollections(data);
-      setLoading(false);
-    } catch (err) {
-      console.log("[collections_GET]", err);
-      toast.error("Something went wrong! Please try again.");
-    }
-  };
-
-  useEffect(() => {
-    getCollections();
-  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -100,7 +80,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
     try {
-      setLoading(true);
       const url = initialData
         ? `/api/products/${initialData._id}`
         : "/api/products";
@@ -109,7 +88,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         body: JSON.stringify(values),
       });
       if (res.ok) {
-        setLoading(false);
         toast.success(`Product ${initialData ? "updated" : "created"}`);
         window.location.href = "/products";
         router.push("/products");
@@ -120,7 +98,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
     }
   };
 
-  return loading ? (
+  return isLoading ? (
     <Loader />
   ) : (
     <div className="p-10">
@@ -268,7 +246,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {collections.length > 0 && (
+            {collections && collections.length > 0 && (
               <FormField
                 control={form.control}
                 name="collections"

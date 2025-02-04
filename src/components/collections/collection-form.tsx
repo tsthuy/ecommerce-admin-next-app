@@ -19,7 +19,7 @@ import toast from "react-hot-toast";
 import { Delete, ImageUpload } from "../custom-ui";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "../ui/button";
-import { useCreateCollection } from "~/lib/hooks";
+import { useCreateCollection, useUpdateCollection } from "~/lib/hooks";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -35,6 +35,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   const router = useRouter();
 
   const { mutate: createCollectionMutation } = useCreateCollection();
+  const { mutate: updateCollectionMutation } = useUpdateCollection();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,24 +60,52 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      createCollectionMutation(values, {
-        onSuccess: (result) => {
-          if (result.success) {
-            toast.success(`Collection ${initialData ? "updated" : "created"}`);
-            router.push("/collections");
-          } else {
-            toast.error(result.error || "Something went wrong");
+      if (initialData) {
+        // Update collection
+        updateCollectionMutation(
+          {
+            ...values,
+            _id: initialData._id,
+            products: initialData.products || [],
+          },
+          {
+            onSuccess: (result) => {
+              if (result) {
+                toast.success("Collection updated");
+                router.push("/collections");
+              }
+            },
+            onError: (error) => {
+              console.log(error);
+              toast.error("Something went wrong! Please try again.");
+            },
           }
-        },
-        onError: (error) => {
-          console.log(error);
-          toast.error("Something went wrong! Please try again.");
-        },
-      });
+        );
+      } else {
+        // Create collection
+        createCollectionMutation(
+          {
+            ...values,
+          },
+          {
+            onSuccess: (result) => {
+              if (result.success) {
+                toast.success("Collection created");
+                router.push("/collections");
+              } else {
+                toast.error(result.error || "Something went wrong");
+              }
+            },
+            onError: (error) => {
+              console.log(error);
+              toast.error("Something went wrong! Please try again.");
+            },
+          }
+        );
+      }
     } catch (err) {
       console.error("[collections_POST]", err);
       toast.error("Something went wrong! Please try again.");
-    } finally {
     }
   };
 
