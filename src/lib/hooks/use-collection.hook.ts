@@ -100,8 +100,12 @@ export const useUpdateCollection = () => {
       );
     },
 
-    onSettled: () => {
+    onSettled: (data, error, updatedCollection) => {
       queryClient.invalidateQueries(queries.collections.all);
+
+      queryClient.invalidateQueries(
+        queries.collections.detail(updatedCollection._id)
+      );
     },
   });
 };
@@ -125,7 +129,7 @@ export const useDeleteCollection = () => {
         }
       );
 
-      return { previousCollections };
+      return { previousCollections, collectionId };
     },
 
     onError: (err, collectionId, context) => {
@@ -135,7 +139,9 @@ export const useDeleteCollection = () => {
       );
     },
 
-    onSettled: () => {
+    onSettled: (data, error, collectionId) => {
+      queryClient.removeQueries(queries.collections.detail(collectionId));
+
       queryClient.invalidateQueries(queries.collections.all);
     },
   });

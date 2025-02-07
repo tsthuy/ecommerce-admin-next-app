@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Trash } from "lucide-react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +14,9 @@ import {
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import { useDeleteCollection } from "~/lib/hooks";
+import { useDeleteProduct } from "~/lib/hooks/use-product.hook";
+import { useRouter } from "next/navigation";
 
 interface DeleteProps {
   item: string;
@@ -23,27 +24,27 @@ interface DeleteProps {
 }
 
 const Delete: React.FC<DeleteProps> = ({ item, id }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const deleteCollectionMutation = useDeleteCollection();
+  const deleteProductMutation = useDeleteProduct();
+  const mutation =
+    item === "product" ? deleteProductMutation : deleteCollectionMutation;
 
   const onDelete = async () => {
     try {
-      setLoading(true);
-      const itemType = item === "product" ? "products" : "collections";
-      const res = await fetch(`/api/${itemType}/${id}`, {
-        method: "DELETE",
-      });
+      await mutation.mutateAsync(id);
 
-      if (res.ok) {
-        setLoading(false);
-        window.location.href = `/${itemType}`;
-        toast.success(`${item} deleted`);
-      }
+      toast.success(`${item} deleted`);
+
+      const itemType = item === "product" ? "products" : "collections";
+      router.push(`/${itemType}`);
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong! Please try again.");
     }
   };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -63,8 +64,12 @@ const Delete: React.FC<DeleteProps> = ({ item, id }) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-red-1 text-white" onClick={onDelete}>
-            Delete
+          <AlertDialogAction
+            className="bg-red-1 text-white"
+            onClick={onDelete}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,8 +1,8 @@
-import { CldUploadWidget } from "next-cloudinary";
 import { Plus, Trash } from "lucide-react";
 
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { CldUploadWidget } from "next-cloudinary";
 
 interface ImageUploadProps {
   value: string[];
@@ -45,13 +45,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         ))}
       </div>
 
-      <CldUploadWidget uploadPreset="admin-next-app" onSuccess={onUpload}>
+      <CldUploadWidget uploadPreset="ecommerce-next-app" onUpload={onUpload}>
         {({ open }) => {
           return (
             <Button
               type="button"
               onClick={() => open()}
-              className="bg-primary text-white"
+              className="bg-grey-1 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Upload Image
