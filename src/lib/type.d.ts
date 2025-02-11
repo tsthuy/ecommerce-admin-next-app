@@ -34,6 +34,7 @@ type OrderColumnType = {
   products: number;
   totalAmount: number;
   createdAt: string;
+  productImage: string;
 };
 
 type OrderItemType = {

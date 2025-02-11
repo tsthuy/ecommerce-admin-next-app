@@ -24,7 +24,7 @@ import MultiSelect from "../custom-ui/multi-select";
 import { useCollections } from "~/lib/hooks";
 
 const formSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 characters").max(20),
+  title: z.string().min(2, "Title must be at least 2 characters").max(200),
   description: z.string().min(2).max(500).trim(),
   media: z.array(z.string()),
   category: z.string(),

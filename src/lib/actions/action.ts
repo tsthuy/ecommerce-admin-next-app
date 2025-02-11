@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { connectDB } from "../mongoDB";
-import { Customer, Collection, Order } from "../models";
+import { Customer, Collection, Order, Product } from "../models";
 
 export const getTotalSales = async () => {
   await connectDB();
@@ -27,10 +27,9 @@ export const getSalesPerMonth = async () => {
   const orders = await Order.find();
 
   const salesPerMonth = orders.reduce((acc, order) => {
-    const monthIndex = new Date(order.createdAt).getMonth(); // 0 for Janruary --> 11 for December
+    const monthIndex = new Date(order.createdAt).getMonth();
     acc[monthIndex] = (acc[monthIndex] || 0) + order.totalAmount;
-    // For June
-    // acc[5] = (acc[5] || 0) + order.totalAmount (orders have monthIndex 5)
+
     return acc;
   }, {});
 
@@ -38,7 +37,7 @@ export const getSalesPerMonth = async () => {
     const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(
       new Date(0, i)
     );
-    // if i === 5 => month = "Jun"
+
     return { name: month, sales: salesPerMonth[i] || 0 };
   });
 
@@ -87,4 +86,55 @@ export const createCollection = async (formData: {
       error: err instanceof Error ? err.message : "Something went wrong",
     };
   }
+};
+
+export const getCustomers = async () => {
+  await connectDB();
+  const customers = await Customer.find();
+  return customers;
+};
+
+export const getOrders = async () => {
+  await connectDB();
+
+  const orders = await Order.find().sort({ createdAt: "desc" }).populate({
+    path: "products.product",
+    model: "Product",
+  });
+
+  const orderDetails = await Promise.all(
+    orders.map(async (order) => {
+      const customer = await Customer.findOne({
+        clerkId: order.customerClerkId,
+      });
+
+      const firstProduct = order.products[0];
+      const productImage = firstProduct.product.media[0];
+
+      return {
+        _id: order._id,
+        customer: customer.name,
+        products: order.products.length,
+        totalAmount: order.totalAmount,
+        createdAt: order.createdAt,
+        productImage: productImage,
+      };
+    })
+  );
+
+  return orderDetails;
+};
+
+export const getOrderDetails = async (orderId: string) => {
+  await connectDB();
+
+  const order = await Order.findById(orderId).populate({
+    path: "products.product",
+    model: Product,
+  });
+
+  if (!order) {
+    throw new Error("Order Not Found");
+  }
+  return order;
 };
